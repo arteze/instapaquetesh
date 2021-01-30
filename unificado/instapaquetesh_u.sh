@@ -38,6 +38,14 @@ function mensajes(){
 
 archivo="$1"
 
-for archivo in "$@"; do
-	instalar_paquete $archivo
-done
+if [[ $archivo == "" ]];then
+	ls ./ | grep "\.deb$" | while read archivo; do
+		instalar_paquete $archivo
+	done
+else
+	for archivo in "$@";do
+		instalar_paquete $archivo
+	done
+fi
+
+gxmessage -center "Se ha instalado" -title "instalado"
