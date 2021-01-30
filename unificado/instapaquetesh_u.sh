@@ -25,7 +25,7 @@ function tener_carpeta(){
 	echo $archivo_tener_carpeta | rev | cut -c$(($(echo $extension|wc -m)+1))- | rev
 }
 function pausar(){
-	gxmessage -center "Pausado: $1" -title "Pausa"
+	gxmessage -title "Pausa" -center "Pausado: $1"
 }
 function mostrar_y_correr_comando(){
 	echo $1 && $1
@@ -46,26 +46,53 @@ function instalar_paquete(){
 	mkdir "./desempacado"; cd "./desempacado"
 	mkdir "./$carpeta"; cd "./$carpeta"
 	mkdir "./ram"
-	mount -t ramfs "./ram"
+	mount -t ramfs none "./ram"
+	echo "#!/bin/sh
+
+gxmessage -title \"Desmontar\" -center \"
+
+rm -rfv ./ram/*
+\$(rm -rfv ./ram/*)
+
+umount -v ./ram
+\$(umount -v ./ram)
+
+rm -rvf ./ram
+\$(rm -rfv ./ram)
+
+if [[ ! -d ./ram ]];then
+	rm -rfv ./desmontar.sh
+fi
+\$(
+	if [[ ! -d ./ram ]];then
+		rm -rfv ./desmontar.sh
+	fi
+)
+
+\"" > ./desmontar.sh
+	chmod +x "./desmontar.sh"
 	cd "./ram"
-	echo "-- Preparando creacion de enlace simbolico --"
 	mostrar_y_correr_comando "ln -sv ../../../$archivo ./$archivo"
-	echo "-- Enlace simbolico creado --"
 	mostrar_y_correr_comando "ar xv ./$archivo"
 	rm -fv "./$archivo"
+	mostrar_y_correr_comando "ln -sv ../../$archivo ../$archivo"
 	ls "./" | grep tar | while read comprimido; do
 		carpeta=$(tener_carpeta "$comprimido")
-		mkdir "./$carpeta" ; cd "./$carpeta"
+		mkdir -v "./$carpeta"
+		cd "./$carpeta"
 		mv -fv "../$comprimido" "./"
 		mostrar_y_correr_comando "tar -xvf ./$comprimido"
 		rm -fv "./$comprimido"
 		cd "../"
+		mv -fv "./$carpeta" "../"
 	done
-	mostrar_y_correr_comando "ln -sv ../../$archivo ./$archivo"
-	cp -rv "./" "../"
+	mv "./"* "../"
 	cd "../"
 	umount "./ram"
 	rm -r "./ram"
+	if [[ ! -d ./ram ]];then
+		rm -rfv ./desmontar.sh
+	fi
 	cd "$ruta_original"
 	ls -ro "./"
 	echo Archivo: $archivo; echo Carpeta: $carpeta
