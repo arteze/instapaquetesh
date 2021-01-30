@@ -52,6 +52,7 @@ function instalar_paquete(){
 	mostrar_y_correr_comando "ln -sv ../../../$archivo ./$archivo"
 	echo "-- Enlace simbolico creado --"
 	mostrar_y_correr_comando "ar xv ./$archivo"
+	rm -fv "./$archivo"
 	ls "./" | grep tar | while read comprimido; do
 		carpeta=$(tener_carpeta "$comprimido")
 		mkdir "./$carpeta" ; cd "./$carpeta"
@@ -60,7 +61,6 @@ function instalar_paquete(){
 		rm -fv "./$comprimido"
 		cd "../"
 	done
-	rm -fv "./$archivo"
 	mostrar_y_correr_comando "ln -sv ../../$archivo ./$archivo"
 	cp -rv "./" "../"
 	cd "../"
