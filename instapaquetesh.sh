@@ -4,12 +4,12 @@ function tener_extension(){
 	archivo="$1"
 	ruta="$(echo $archivo | rev | grep -Po "[^.]+")"
 	echo "$ruta" | while read fila; do
-			encuentra=$(echo "$fila" | grep -v "[-_]")
-			if [[ "$encuentra" != "" ]]; then
-					echo $encuentra
-			else
-					break
-			fi
+		encuentra=$(echo "$fila" | grep -v "[-_]")
+		if [[ "$encuentra" != "" ]]; then
+			echo $encuentra
+		else
+			break
+		fi
 	done | echo "$(cat | paste -sd "." | rev )"
 }
 function instalar_paquete(){
