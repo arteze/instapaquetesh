@@ -70,16 +70,6 @@ function instalar_paquete(){
 	ls -ro "./"
 	echo Archivo: $archivo; echo Carpeta: $carpeta
 }
-function mensajes(){
-	buscar=$1
-	echo "$(
-		ps -fe |\
-		grep sleep |\
-		grep -v grep |\
-		sed "s/.*00:00:00 sleep inf //" |\
-		grep $buscar
-	)"
-}
 
 archivo="$1"
 cd $(dirname $archivo)
