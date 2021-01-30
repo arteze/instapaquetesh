@@ -1,29 +1,74 @@
 #!/bin/sh
 
 function tener_extension(){
-	archivo="$1"
-	ruta="$(echo $archivo | rev | grep -Po "[^.]+")"
-	echo "$ruta" | while read fila; do
-		encuentra=$(echo "$fila" | grep -v "[-_]")
+	archivo_tener_extension="$1"
+	extension_cortada="$(echo $archivo_tener_extension | rev | grep -Po "[^.]+" | head -n -1)"
+	echo "$extension_cortada" | while read fila; do
+		encuentra=$(echo "$fila" | grep -v "[-_]" | tail -n1)
 		if [[ "$encuentra" != "" ]]; then
 			echo $encuentra
 		else
 			break
 		fi
-	done | echo "$(cat | paste -sd "." | rev )"
+	done | rev | echo "$(paste -sd "." | rev )" | while read fila; do
+		encuentra=$(echo "$fila" | grep -v "[-_]" | tail -n1)
+		if [[ "$encuentra" != "" ]]; then
+			echo $encuentra
+		else
+			break
+		fi
+	done | echo "$(paste -sd "." | rev )"
+}
+function tener_carpeta(){
+	archivo_tener_carpeta="$1"
+	extension="$(tener_extension $archivo_tener_carpeta)"
+	echo $archivo_tener_carpeta | rev | cut -c$(($(echo $extension|wc -m)+1))- | rev
+}
+function pausar(){
+	gxmessage -center "Pausado: $1" -title "Pausa"
+}
+function mostrar_y_correr_comando(){
+	echo $1 && $1
 }
 function instalar_paquete(){
-	archivo="$1"
+	ruta_original=$(pwd)
+	archivo="$(basename $1)"
 	extension="$(tener_extension $archivo)"
-	carpeta=$(echo $archivo | rev | cut -c$(($(echo $extension|wc -m)+1))- | rev) 
-	echo Carpeta: $carpeta && echo Extension: $extension
-	rm -rfv "$carpeta"
+	carpeta="$(tener_carpeta $archivo)"
+	echo "Ruta: $ruta_original"
+	echo "Archivo: $archivo"
+	echo "Carpeta: $carpeta"
+	echo "Extension: $extension"
+	umount -v "./desempacado/$carpeta/ram"
+	rm -rfv "./desempacado/$carpeta"
+	#comando="7z -r -o$carpeta x $archivo"
 	#comando="file-roller --service --force -e $carpeta $archivo"
-	comando="7z -r -o$carpeta x $archivo"
-	echo $comando && $comando
-	ls $carpeta/
-	#cp -vr $carpeta /
-	echo Archivo: $archivo && echo Carpeta: $carpeta
+	mkdir "./desempacado"; cd "./desempacado"
+	mkdir "./$carpeta"; cd "./$carpeta"
+	mkdir "./ram"
+	mount -t ramfs "./ram"
+	cd "./ram"
+	echo "-- Preparando creacion de enlace simbolico --"
+	mostrar_y_correr_comando "ln -sv ../../../$archivo ./$archivo"
+	echo "-- Enlace simbolico creado --"
+	mostrar_y_correr_comando "ar xv ./$archivo"
+	ls "./" | grep tar | while read comprimido; do
+		carpeta=$(tener_carpeta "$comprimido")
+		mkdir "./$carpeta" ; cd "./$carpeta"
+		mv -fv "../$comprimido" "./"
+		mostrar_y_correr_comando "tar -xvf ./$comprimido"
+		rm -fv "./$comprimido"
+		cd "../"
+	done
+	rm -fv "./$archivo"
+	mostrar_y_correr_comando "ln -sv ../../$archivo ./$archivo"
+	cp -rv "./" "../"
+	cd "../"
+	umount "./ram"
+	rm -r "./ram"
+	cd "$ruta_original"
+	ls -ro "./"
+	echo Archivo: $archivo; echo Carpeta: $carpeta
 }
 function mensajes(){
 	buscar=$1
@@ -37,9 +82,10 @@ function mensajes(){
 }
 
 archivo="$1"
+cd $(dirname $archivo)
 
 if [[ $archivo == "" ]];then
-	ls ./ | grep "\.deb$" | while read archivo; do
+	ls "./" | grep "\.deb$" | while read archivo; do
 		instalar_paquete $archivo
 	done
 else
@@ -48,4 +94,4 @@ else
 	done
 fi
 
-gxmessage -center "Se ha instalado" -title "instalado"
+gxmessage -center "Paquetes instalados." -title "instalado"
