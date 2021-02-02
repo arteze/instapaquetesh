@@ -94,21 +94,28 @@ fi
 		rm -rfv ./desmontar.sh
 	fi
 	cd "$ruta_original"
-	ls -ro "./"
+	echo "Compienzo copia"
+	cp -rv "./desempacado/$carpeta/data/"* "/"
+	echo "Fin copia"
+	ls -Rho "./desempacado/$carpeta"
 	echo Archivo: $archivo; echo Carpeta: $carpeta
 }
 
-archivo="$1"
-cd $(dirname $archivo)
+function instalar_todo(){
+	archivo="$1"
+	cd $(dirname $archivo)
 
-if [[ $archivo == "" ]];then
-	ls "./" | grep "\.deb$" | while read archivo; do
-		instalar_paquete $archivo
-	done
-else
-	for archivo in "$@";do
-		instalar_paquete $archivo
-	done
-fi
+	if [[ $archivo == "" ]];then
+		ls "./" | grep "\.deb$" | while read archivo; do
+			instalar_paquete $archivo
+		done
+	else
+		for archivo in "$@";do
+			instalar_paquete $archivo
+		done
+	fi
 
-gxmessage -center "Paquetes instalados." -title "instalado"
+	gxmessage -center "Paquetes instalados." -title "instalado"
+}
+
+instalar_todo "$@"
