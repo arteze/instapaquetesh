@@ -30,23 +30,7 @@ function pausar(){
 function mostrar_y_correr_comando(){
 	echo $1 && $1
 }
-function instalar_paquete(){
-	ruta_original=$(pwd)
-	archivo="$(basename $1)"
-	extension="$(tener_extension $archivo)"
-	carpeta="$(tener_carpeta $archivo)"
-	echo "Ruta: $ruta_original"
-	echo "Archivo: $archivo"
-	echo "Carpeta: $carpeta"
-	echo "Extension: $extension"
-	umount -v "./desempacado/$carpeta/ram"
-	rm -rfv "./desempacado/$carpeta"
-	#comando="7z -r -o$carpeta x $archivo"
-	#comando="file-roller --service --force -e $carpeta $archivo"
-	mkdir "./desempacado"; cd "./desempacado"
-	mkdir "./$carpeta"; cd "./$carpeta"
-	mkdir "./ram"
-	mount -t ramfs none "./ram"
+function crear_desmontador(){
 	echo "#!/bin/sh
 
 gxmessage -title \"Desmontar\" -center \"
@@ -71,6 +55,30 @@ fi
 
 \"" > ./desmontar.sh
 	chmod +x "./desmontar.sh"
+}
+function borrar_desmontador(){
+	if [[ ! -d ./ram ]];then
+		rm -rfv ./desmontar.sh
+	fi
+}
+function instalar_paquete(){
+	ruta_original=$(pwd)
+	archivo="$(basename $1)"
+	extension="$(tener_extension $archivo)"
+	carpeta="$(tener_carpeta $archivo)"
+	echo "Ruta: $ruta_original"
+	echo "Archivo: $archivo"
+	echo "Carpeta: $carpeta"
+	echo "Extension: $extension"
+	umount -v "./desempacado/$carpeta/ram"
+	rm -rfv "./desempacado/$carpeta"
+	#comando="7z -r -o$carpeta x $archivo"
+	#comando="file-roller --service --force -e $carpeta $archivo"
+	mkdir "./desempacado"; cd "./desempacado"
+	mkdir "./$carpeta"; cd "./$carpeta"
+	mkdir "./ram"
+	mount -t ramfs none "./ram"
+	crear_desmontador
 	cd "./ram"
 	mostrar_y_correr_comando "ln -sv ../../../$archivo ./$archivo"
 	mostrar_y_correr_comando "ar xv ./$archivo"
@@ -90,9 +98,7 @@ fi
 	cd "../"
 	umount "./ram"
 	rm -r "./ram"
-	if [[ ! -d ./ram ]];then
-		rm -rfv ./desmontar.sh
-	fi
+	borrar_desmontador
 	cd "$ruta_original"
 	echo "Compienzo copia"
 	cp -rv "./desempacado/$carpeta/data/"* "/"
