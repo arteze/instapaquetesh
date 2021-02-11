@@ -71,6 +71,12 @@ function borrar_desmontador(){
 }
 function instalar_paquete(){
 	ruta_original=$(pwd)
+	basename_comando="$(basename 2>&1)"
+	if [[ "$(echo $basename_comando | grep dpkg)" != "" ]]; then
+		gxmessage -center "$resultado
+Error al ejecutar basename: Para solucionarlo, reinstalar coreutils" -title "Error"
+		exit
+	fi
 	archivo="$(basename $1)"
 	extension="$(tener_extension $archivo)"
 	carpeta="$(tener_carpeta $archivo)"
@@ -132,5 +138,4 @@ function instalar_todo(){
 	gxmessage -center "Paquetes instalados." -title "instalado"
 }
 
-n=0
 instalar_todo "$@"
