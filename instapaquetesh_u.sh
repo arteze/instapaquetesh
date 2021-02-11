@@ -28,7 +28,15 @@ function pausar(){
 	gxmessage -title "Pausa" -center "Pausado: $1"
 }
 function mostrar_y_correr_comando(){
-	echo $1 && $1
+	echo $1
+	resultado="$($1 2>&1)"
+	if [[ "$(echo $resultado | grep "command not found")" != ""
+	  || "$(echo $resultado | grep "orden no encontrada")" != ""
+	]]; then
+		gxmessage -center "$resultado
+Para solucionarlo, instalar binutils, binutils-multiarch y bash" -title "Error"
+		exit
+	fi
 }
 function crear_desmontador(){
 	echo "#!/bin/sh
@@ -124,4 +132,5 @@ function instalar_todo(){
 	gxmessage -center "Paquetes instalados." -title "instalado"
 }
 
+n=0
 instalar_todo "$@"
