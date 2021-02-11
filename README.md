@@ -6,6 +6,7 @@ Script para instalar paquetes en linux.
  - bash
  - binutils
  - binutils-multiarch
+ - coreutils
 
 ## Notas
 
