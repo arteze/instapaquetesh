@@ -91,6 +91,12 @@ Error al ejecutar basename: Para solucionarlo, reinstalar coreutils" -title "Err
 	mkdir "./desempacado"; cd "./desempacado"
 	mkdir "./$carpeta"; cd "./$carpeta"
 	mkdir "./ram"
+	mount_comando="$(mount 2>&1)"
+	if [[ "$(echo $mount_comando | grep dpkg)" != "" ]]; then
+		gxmessage -center "$mount_comando
+Error al ejecutar mount: Para solucionarlo, reinstalar mount" -title "Error"
+		exit
+	fi
 	mount -t ramfs none "./ram"
 	crear_desmontador
 	cd "./ram"
