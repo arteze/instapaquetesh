@@ -4,7 +4,7 @@ Script para instalar paquetes en linux.
 ## Dependencias
 
  - busybox
-  - mount
+   - mount
 
  - bash
  - binutils
