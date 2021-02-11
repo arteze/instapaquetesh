@@ -3,11 +3,13 @@ Script para instalar paquetes en linux.
 
 ## Dependencias
 
+ - busybox
+ - - mount
+
  - bash
  - binutils
  - binutils-multiarch
  - coreutils
- - mount
 
 ## Notas
 
