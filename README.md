@@ -7,6 +7,7 @@ Script para instalar paquetes en linux.
  - binutils
  - binutils-multiarch
  - coreutils
+ - mount
 
 ## Notas
 
