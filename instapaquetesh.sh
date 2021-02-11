@@ -94,7 +94,7 @@ Error al ejecutar basename: Para solucionarlo, reinstalar coreutils" -title "Err
 	mount_comando="$(mount 2>&1)"
 	if [[ "$(echo $mount_comando | grep dpkg)" != "" ]]; then
 		gxmessage -center "$mount_comando
-Error al ejecutar mount: Para solucionarlo, reinstalar mount" -title "Error"
+Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount" -title "Error"
 		exit
 	fi
 	mount -t ramfs none "./ram"
