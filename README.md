@@ -8,7 +8,9 @@ Script para instalar paquetes en linux.
 
  - bash
  - binutils
- - binutils-multiarch
+   - binutils-multiarch
+   - libbinutils
+ 
  - coreutils
 
 ## Notas
