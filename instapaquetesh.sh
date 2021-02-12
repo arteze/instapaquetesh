@@ -70,6 +70,10 @@ function borrar_desmontador(){
 	fi
 }
 function instalar_paquete(){
+	if [[ -d ./debs ]]; then
+		mv -v ./*.deb ./debs
+		cd ./debs
+	fi
 	ruta_original=$(pwd)
 	basename_comando="$(basename 2>&1)"
 	if [[ "$(echo $basename_comando | grep dpkg)" != "" ]]; then
