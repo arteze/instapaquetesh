@@ -83,7 +83,6 @@ function instalar_paquete(){
 	fi
 	ruta_original=$(pwd)
 	basename_comando="$(basename 2>&1)"
-	echo $basename_comando
 	if [[ "$(echo $basename_comando | grep dpkg)" != "" ]]; then
 		gxmessage -center "$basename_comando
 Error al ejecutar basename: Para solucionarlo, reinstalar coreutils" -title "Error"
