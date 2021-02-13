@@ -69,19 +69,31 @@ function borrar_desmontador(){
 		rm -rfv ./desmontar.sh
 	fi
 }
+function borrar_lib(){
+	cdlib="$(ls $1)"
+	if [[ "$cdlib" == "" ]];then
+		rm -rfv "$1"
+	fi
+}
 function instalar_paquete(){
+	cd "$(dirname $1)"
 	if [[ -d ./debs ]]; then
 		mv -v ./*.deb ./debs
 		cd ./debs
 	fi
 	ruta_original=$(pwd)
 	basename_comando="$(basename 2>&1)"
+	echo $basename_comando
 	if [[ "$(echo $basename_comando | grep dpkg)" != "" ]]; then
 		gxmessage -center "$basename_comando
 Error al ejecutar basename: Para solucionarlo, reinstalar coreutils" -title "Error"
 		exit
 	fi
-	archivo="$(basename $1)"
+	archivo="$(basename $1 2>&1)"
+	if [[ "$(echo $archivo | grep invalid)" != "" ]]; then
+		cp -vf "/bin/basename-FULL" "/bin/basename"
+		archivo="$(basename $1 2>&1)"
+	fi
 	extension="$(tener_extension $archivo)"
 	carpeta="$(tener_carpeta $archivo)"
 	echo "Ruta: $ruta_original"
@@ -101,11 +113,14 @@ Error al ejecutar basename: Para solucionarlo, reinstalar coreutils" -title "Err
 Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount" -title "Error"
 		exit
 	fi
+	if [[ "$(mount)" == "mount" ]]; then
+		cp -vf "/bin/mount-FULL" "/bin/mount"
+	fi
 	mount -t ramfs none "./ram"
 	crear_desmontador
 	cd "./ram"
 	mostrar_y_correr_comando "ln -sv ../../../$archivo ./$archivo"
-	mostrar_y_correr_comando "ar xv ./$archivo"
+	mostrar_y_correr_comando "busybox ar xv ./$archivo"
 	rm -fv "./$archivo"
 	mostrar_y_correr_comando "ln -sv ../../$archivo ../$archivo"
 	ls "./" | grep tar | while read comprimido; do
@@ -117,25 +132,33 @@ Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount" -title "
 		rm -fv "./$comprimido"
 		cd "../"
 		mv -fv "./$carpeta" "../"
+		
 	done
 	mv "./"* "../"
 	cd "../"
 	umount "./ram"
 	rm -r "./ram"
 	borrar_desmontador
-	cd "$ruta_original"
 	echo "Compienzo copia"
-	cp -rv "./desempacado/$carpeta/data/"* "/"
+	cd "./data"
+	mkdir -pv "./lib64"
+	mkdir -pv "./usr/lib64"
+	mv -vf "./lib/x86_64-linux-gnu/"* "./lib64"
+	mv -vf "./usr/lib/x86_64-linux-gnu/"* "./usr/lib64"
+	rm -rfv "./lib/x86_64-linux-gnu"
+	rm -rfv "./usr/lib/x86_64-linux-gnu"
+	borrar_lib "./lib"
+	borrar_lib "./usr/lib"
+	ls "./"
+	cp -rv "./"* "/"
 	echo "Fin copia"
+	cd "$ruta_original"
 	ls -Rho "./desempacado/$carpeta"
 	echo Archivo: $archivo; echo Carpeta: $carpeta
 }
 
 function instalar_todo(){
-	archivo="$1"
-	cd $(dirname $archivo)
-
-	if [[ $archivo == "" ]];then
+	if [[ "$#" == 0 ]];then
 		ls "./" | grep "\.deb$" | while read archivo; do
 			instalar_paquete $archivo
 		done
