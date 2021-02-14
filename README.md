@@ -3,13 +3,5 @@ Script para instalar paquetes en linux.
 
 ## Dependencias
 
- - mount
-   - binutils y coreutils
-   - - libbinutils
-   -   - bash
-   -   -  libc6
+ - Busybox v1.31.0 => https://busybox.net/downloads/binaries/1.31.0-defconfig-multiarch-musl/busybox-x86_64
  
-## Notas
-
- - El multiproceso está obsoleto... No usar.
- - BusyBox >= v1.31.1
