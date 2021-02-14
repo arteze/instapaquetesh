@@ -12,4 +12,4 @@ Script para instalar paquetes en linux.
 ## Notas
 
  - El multiproceso está obsoleto... No usar.
- - Evitar el uso de Busybox
+ - BusyBox >= v1.31.1
