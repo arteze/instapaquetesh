@@ -1,5 +1,8 @@
 #!/bin/sh
 
+function mostrar_instalado_xm(){
+	gxmessage -center "Paquetes instalados." -title "instalado"
+}
 function tener_extension(){
 	archivo_tener_extension="$1"
 	extension_cortada="$(echo $archivo_tener_extension | rev | grep -Po "[^.]+" | head -n -1)"
@@ -109,7 +112,7 @@ Error al ejecutar basename: Para solucionarlo, reinstalar coreutils" -title "Err
 	mount_comando="$(mount 2>&1)"
 	if [[ "$(echo $mount_comando | grep dpkg)" != "" ]]; then
 		gxmessage -center "$mount_comando
-Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount" -title "Error"
+Error al ejecutar mount: Para solucionarlo, reinstalar mount" -title "Error"
 		exit
 	fi
 	if [[ "$(mount)" == "mount" ]]; then
@@ -156,16 +159,25 @@ Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount" -title "
 
 function instalar_todo(){
 	if [[ "$#" == 0 ]];then
+		echo "Dependencias:
+
+binutils coreutils
+  bash
+    libc6
+
+Para instalar todos los deb:
+  $(basename $0) t"
+	elif [[ "$#" == 1 && "$1" == "t"  ]];then
 		ls "./" | grep "\.deb$" | while read archivo; do
 			instalar_paquete $archivo
 		done
+		mostrar_instalado_xm
 	else
 		for archivo in "$@";do
 			instalar_paquete $archivo
 		done
+		mostrar_instalado_xm
 	fi
-
-	gxmessage -center "Paquetes instalados." -title "instalado"
 }
 
 instalar_todo "$@"
