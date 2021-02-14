@@ -3,16 +3,13 @@ Script para instalar paquetes en linux.
 
 ## Dependencias
 
- - busybox
-   - mount
-
- - bash
- - binutils
-   - binutils-multiarch
-   - libbinutils
+ - mount
+   - binutils y coreutils
+   - - libbinutils
+   -   - bash
+   -   -  libc6
  
- - coreutils
-
 ## Notas
 
-El multiproceso está obsoleto... No usar.
+ - El multiproceso está obsoleto... No usar.
+ - Evitar el uso de Busybox
