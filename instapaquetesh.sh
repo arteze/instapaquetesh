@@ -140,8 +140,6 @@ Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount" -title "
 	borrar_desmontador
 	echo "Compienzo copia"
 	cd "./data"
-	#mkdir -pv "./lib64"
-	#mkdir -pv "./usr/lib64"
 	mv -vf "./lib/x86_64-linux-gnu" "./lib64"
 	mv -vf "./usr/lib/x86_64-linux-gnu" "./usr/lib64"
 	rm -rfv "./lib/x86_64-linux-gnu"
