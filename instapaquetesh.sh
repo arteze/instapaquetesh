@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 function mostrar_instalado_xm(){
 	gxmessage -center "Paquetes instalados." -title "instalado"
