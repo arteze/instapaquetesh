@@ -8,6 +8,8 @@
 
 ## Notas
 
+- El entorno es `bash`, no `sh`.
+
  - El multiproceso está obsoleto... No usar.
 
 En caso de usar busybox, usar:
