@@ -1,5 +1,8 @@
 #!/bin/sh
 
+function mostrar_instalado_xm(){
+	gxmessage -center "Paquetes instalados." -title "instalado"
+}
 function tener_extension(){
 	archivo_tener_extension="$1"
 	extension_cortada="$(echo $archivo_tener_extension | rev | grep -Po "[^.]+" | head -n -1)"
@@ -30,8 +33,8 @@ function pausar(){
 function mostrar_y_correr_comando(){
 	echo $1
 	resultado="$($1 2>&1)"
-	if [[ "$(echo $resultado | grep "command not found")" != ""
-	  || "$(echo $resultado | grep "orden no encontrada")" != ""
+	if [[ "$(echo $resultado | grep "command not found")" != "" ||
+      "$(echo $resultado | grep "orden no encontrada")" != ""
 	]]; then
 		gxmessage -center "$resultado
 Para solucionarlo, instalar binutils, binutils-multiarch y bash" -title "Error"
@@ -158,16 +161,22 @@ Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount" -title "
 
 function instalar_todo(){
 	if [[ "$#" == 0 ]];then
+		echo "
+$(basename $0) .............. Muestra la ayuda
+$(basename $0) t ............ Para instalar todo
+$(basename $0) archivo.deb .. Para instalar un deb
+"
+	elif [[ "$#" == 1 && "$1" == "t" ]];then
 		ls "./" | grep "\.deb$" | while read archivo; do
 			instalar_paquete $archivo
 		done
+		mostrar_instalado_xm
 	else
 		for archivo in "$@";do
 			instalar_paquete $archivo
 		done
+		mostrar_instalado_xm
 	fi
-
-	gxmessage -center "Paquetes instalados." -title "instalado"
 }
 
 instalar_todo "$@"
