@@ -93,15 +93,10 @@ Para solucionarlo, reinstalar Busybox"
 		exit
 	fi
 	cd "$(dirname $1)"
-	echo hola4
 	if [[ -d ./debs ]]; then
-		echo hola4
 		mv -v ./*.deb ./debs
-		echo hola5
 		cd ./debs
-		echo hola6
 	fi
-	echo hola2
 	ruta_original=$(pwd)
 	basename_comando="$(basename 2>&1)"
 	if [[ "$(echo $basename_comando | grep dpkg)" != "" ]]; then
@@ -109,7 +104,6 @@ Para solucionarlo, reinstalar Busybox"
 Error al ejecutar basename: Para solucionarlo, reinstalar coreutils" -title "Error"
 		exit
 	fi
-	echo hola3
 	archivo="$(basename $1 2>&1)"
 	if [[ "$(echo $archivo | grep invalid)" != "" ]]; then
 		cp -vf "/bin/basename-FULL" "/bin/basename"
