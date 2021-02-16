@@ -162,14 +162,13 @@ Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount"
 	borrar_carpeta "./usr"
 	borrar_carpeta "./usr/lib"
 	borrar_carpeta "./usr/lib64"
-	ls "./"
 	cp -frv "./"* "/"
 	echo "Fin copia"
+	ls -Rhl --color=always "./"
 	cd "../"
 	mv "./data/"* "./"
 	borrar_carpeta "./data"
 	cd "$ruta_original"
-	ls -Rho "./desempacado/$carpeta"
 	echo Archivo: $archivo; echo Carpeta: $carpeta
 }
 
