@@ -53,7 +53,7 @@ function crear_desmontador(){
 	echo "#!/bin/sh
 
 function mostrar(){
-	gxmessage -title $1 -center $2
+	gxmessage -title \$1 -center \$2
 }
 
 mostrar Desmontar Desmontar
@@ -84,7 +84,7 @@ function borrar_desmontador(){
 		rm -rfv ./desmontar.sh
 	fi
 }
-function borrar_lib(){
+function borrar_carpeta(){
 	cdlib="$(ls $1)"
 	if [[ "$cdlib" == "" ]];then
 		rm -rfv "$1"
@@ -139,16 +139,17 @@ Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount"
 	crear_desmontador
 	cd "./ram"
 	mkdir "./data"
-	mostrar_y_correr_comando "ln -sv ../../../$archivo ./$archivo"
-	mostrar_y_correr_comando "dpkg-deb -X ./$archivo ./data"
+	cd "./data"
+	mostrar_y_correr_comando "ln -sv ../../../../$archivo ./$archivo"
+	mostrar_y_correr_comando "dpkg-deb -X ./$archivo ./"
 	rm -fv "./$archivo"
-	mostrar_y_correr_comando "ln -sv ../../$archivo ../$archivo"
-	echo "hola" && read -n1
-	mv "./"* "../"
-	cd "../"
+	cd "../../"
+	mostrar_y_correr_comando "ln -sv ../../$archivo ./$archivo"
+	mv "./ram/"* "./"
 	umount "./ram"
 	rm -r "./ram"
 	borrar_desmontador
+	cd "./data"
 	echo "Compienzo copia"
 	mkdir -pv "./lib64"
 	mkdir -pv "./usr/lib64"
@@ -156,11 +157,17 @@ Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount"
 	mv -vf "./usr/lib/x86_64-linux-gnu/"* "./usr/lib64"
 	rm -rfv "./lib/x86_64-linux-gnu"
 	rm -rfv "./usr/lib/x86_64-linux-gnu"
-	borrar_lib "./lib"
-	borrar_lib "./usr/lib"
+	borrar_carpeta "./lib"
+	borrar_carpeta "./lib64"
+	borrar_carpeta "./usr"
+	borrar_carpeta "./usr/lib"
+	borrar_carpeta "./usr/lib64"
 	ls "./"
-	cp -frv "./data/"* "/"
+	cp -frv "./"* "/"
 	echo "Fin copia"
+	cd "../"
+	mv "./data/"* "./"
+	borrar_carpeta "./data"
 	cd "$ruta_original"
 	ls -Rho "./desempacado/$carpeta"
 	echo Archivo: $archivo; echo Carpeta: $carpeta
