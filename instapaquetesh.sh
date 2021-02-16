@@ -87,11 +87,21 @@ function borrar_lib(){
 	fi
 }
 function instalar_paquete(){
-	cd "$(dirname $1)"
-	if [[ -d ./debs ]]; then
-		mv -v ./*.deb ./debs
-		cd ./debs
+	if [[ "$(busybox 2>&1 | grep BusyBox)" == "" ]];then
+		mostrar "El busybox está dañado.
+Para solucionarlo, reinstalar Busybox"
+		exit
 	fi
+	cd "$(dirname $1)"
+	echo hola4
+	if [[ -d ./debs ]]; then
+		echo hola4
+		mv -v ./*.deb ./debs
+		echo hola5
+		cd ./debs
+		echo hola6
+	fi
+	echo hola2
 	ruta_original=$(pwd)
 	basename_comando="$(basename 2>&1)"
 	if [[ "$(echo $basename_comando | grep dpkg)" != "" ]]; then
@@ -99,6 +109,7 @@ function instalar_paquete(){
 Error al ejecutar basename: Para solucionarlo, reinstalar coreutils" -title "Error"
 		exit
 	fi
+	echo hola3
 	archivo="$(basename $1 2>&1)"
 	if [[ "$(echo $archivo | grep invalid)" != "" ]]; then
 		cp -vf "/bin/basename-FULL" "/bin/basename"
