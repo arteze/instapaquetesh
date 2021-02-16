@@ -12,7 +12,7 @@ function pausar(){
 function mostrar_y_correr_comando(){
 	echo $1
 	resultado="$($1 2>&1)"
-	if [[ "$(echo $resultado | grep "command not found")" != "" ||
+	if [[ "$(echo "$resultado" | grep "command not found")" != "" ||
       "$(echo $resultado | grep "orden no encontrada")" != ""
 	]]; then
 		mostrar "Error" "$resultado
@@ -53,10 +53,10 @@ function crear_desmontador(){
 	echo "#!/bin/sh
 
 function mostrar(){
-	gxmessage -title \"$1\" -center \"$2\"
+	gxmessage -title $1 -center $2
 }
 
-mostrar \"Desmontar\" \"Desmontar\"
+mostrar Desmontar Desmontar
 
 rm -rfv ./ram/*
 \$(rm -rfv ./ram/*)
@@ -138,21 +138,12 @@ Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount"
 	mount -t ramfs none "./ram"
 	crear_desmontador
 	cd "./ram"
+	mkdir "./data"
 	mostrar_y_correr_comando "ln -sv ../../../$archivo ./$archivo"
-	mostrar_y_correr_comando "dpkg-deb -X ./$archivo ./"
+	mostrar_y_correr_comando "dpkg-deb -X ./$archivo ./data"
 	rm -fv "./$archivo"
 	mostrar_y_correr_comando "ln -sv ../../$archivo ../$archivo"
-	ls "./" | grep tar | while read comprimido; do
-		carpeta=$(tener_carpeta "$comprimido")
-		mkdir -v "./$carpeta"
-		cd "./$carpeta"
-		mv -fv "../$comprimido" "./"
-		mostrar_y_correr_comando "tar -xvf ./$comprimido"
-		rm -fv "./$comprimido"
-		cd "../"
-		mv -fv "./$carpeta" "../"
-		
-	done
+	echo "hola" && read -n1
 	mv "./"* "../"
 	cd "../"
 	umount "./ram"
@@ -168,7 +159,7 @@ Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount"
 	borrar_lib "./lib"
 	borrar_lib "./usr/lib"
 	ls "./"
-	cp -frv "./"* "/"
+	cp -frv "./data/"* "/"
 	echo "Fin copia"
 	cd "$ruta_original"
 	ls -Rho "./desempacado/$carpeta"
