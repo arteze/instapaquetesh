@@ -52,7 +52,11 @@ function tener_carpeta(){
 function crear_desmontador(){
 	echo "#!/bin/sh
 
-gxmessage -title \"Desmontar\" -center \"
+function mostrar(){
+	gxmessage -title \"$1\" -center \"$2\"
+}
+
+mostrar \"Desmontar\" \"Desmontar\"
 
 rm -rfv ./ram/*
 \$(rm -rfv ./ram/*)
@@ -100,8 +104,8 @@ Para solucionarlo, reinstalar Busybox"
 	ruta_original=$(pwd)
 	basename_comando="$(basename 2>&1)"
 	if [[ "$(echo $basename_comando | grep dpkg)" != "" ]]; then
-		gxmessage -center "$basename_comando
-Error al ejecutar basename: Para solucionarlo, reinstalar coreutils" -title "Error"
+		mostrar "Error" "$basename_comando
+Error al ejecutar basename: Para solucionarlo, reinstalar coreutils"
 		exit
 	fi
 	archivo="$(basename $1 2>&1)"
@@ -124,8 +128,8 @@ Error al ejecutar basename: Para solucionarlo, reinstalar coreutils" -title "Err
 	mkdir "./ram"
 	mount_comando="$(mount 2>&1)"
 	if [[ "$(echo $mount_comando | grep dpkg)" != "" ]]; then
-		gxmessage -center "$mount_comando
-Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount" -title "Error"
+		mostrar "Error" "$mount_comando
+Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount"
 		exit
 	fi
 	if [[ "$(mount)" == "mount" ]]; then
