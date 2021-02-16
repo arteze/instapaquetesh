@@ -1,10 +1,32 @@
 #!/bin/bash
 
+function mostrar(){
+	gxmessage -title "$1" -center "$2"
+}
 function mostrar_instalado_xm(){
-	gxmessage -center "Paquetes instalados." -title "instalado"
+	mostrar "Paquetes instalados." "instalado"
+}
+function pausar(){
+	mostrar "Pausa" "Pausado: $1"
+}
+function mostrar_y_correr_comando(){
+	echo $1
+	resultado="$($1 2>&1)"
+	if [[ "$(echo $resultado | grep "command not found")" != "" ||
+      "$(echo $resultado | grep "orden no encontrada")" != ""
+	]]; then
+		mostrar "Error" "$resultado
+Para solucionarlo, instalar binutils, binutils-multiarch y bash"
+		exit
+	fi
 }
 function tener_extension(){
 	archivo_tener_extension="$1"
+	if [[ "$(grep 2>&1 | grep -i busybox)" != "" ]];then
+		mostrar "Error" "El grep es de busybox:
+Para solucionarlo, instalar coreutils."
+		exit
+	fi
 	extension_cortada="$(echo $archivo_tener_extension | rev | grep -Po "[^.]+" | head -n -1)"
 	echo "$extension_cortada" | while read fila; do
 		encuentra=$(echo "$fila" | grep -v "[-_]" | tail -n1)
@@ -26,20 +48,6 @@ function tener_carpeta(){
 	archivo_tener_carpeta="$1"
 	extension="$(tener_extension $archivo_tener_carpeta)"
 	echo $archivo_tener_carpeta | rev | cut -c$(($(echo $extension|wc -m)+1))- | rev
-}
-function pausar(){
-	gxmessage -title "Pausa" -center "Pausado: $1"
-}
-function mostrar_y_correr_comando(){
-	echo $1
-	resultado="$($1 2>&1)"
-	if [[ "$(echo $resultado | grep "command not found")" != "" ||
-      "$(echo $resultado | grep "orden no encontrada")" != ""
-	]]; then
-		gxmessage -center "$resultado
-Para solucionarlo, instalar binutils, binutils-multiarch y bash" -title "Error"
-		exit
-	fi
 }
 function crear_desmontador(){
 	echo "#!/bin/sh
