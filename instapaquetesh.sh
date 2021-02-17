@@ -22,10 +22,11 @@ Para solucionarlo, instalar binutils, binutils-multiarch y bash"
 }
 function tener_extension(){
 	archivo_tener_extension="$1"
-	if [[ "$(grep 2>&1 | grep -i busybox)" != "" ]];then
-		mostrar "Error" "El grep es de busybox:
-Para solucionarlo, instalar coreutils."
+	if [[ "$(grep 2>&1 | grep -i BusyBox)" != "" ]];then
+		mostrar "Error" "El grep es de BusyBox:
+Para solucionarlo, instalar grep."
 		exit
+		mostrar "No se pudo salir del programa, salir manualmente."
 	fi
 	extension_cortada="$(echo $archivo_tener_extension | rev | grep -Po "[^.]+" | head -n -1)"
 	echo "$extension_cortada" | while read fila; do
@@ -92,8 +93,8 @@ function borrar_carpeta(){
 }
 function instalar_paquete(){
 	if [[ "$(busybox 2>&1 | grep BusyBox)" == "" ]];then
-		mostrar "El busybox está dañado.
-Para solucionarlo, reinstalar Busybox"
+		mostrar "El BusyBox está dañado.
+Para solucionarlo, reinstalar BusyBox"
 		exit
 	fi
 	cd "$(dirname $1)"
@@ -129,7 +130,7 @@ Error al ejecutar basename: Para solucionarlo, reinstalar coreutils"
 	mount_comando="$(mount 2>&1)"
 	if [[ "$(echo $mount_comando | grep dpkg)" != "" ]]; then
 		mostrar "Error" "$mount_comando
-Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount"
+Error al ejecutar mount: Para solucionarlo, reinstalar BusyBox o mount"
 		exit
 	fi
 	if [[ "$(mount)" == "mount" ]]; then
@@ -141,8 +142,14 @@ Error al ejecutar mount: Para solucionarlo, reinstalar busybox o mount"
 	mkdir "./data"
 	cd "./data"
 	mostrar_y_correr_comando "ln -sv ../../../../$archivo ./$archivo"
+	if [[ "$(dpkg-deb 2>&1 | grep applet not found)" != "" ]];then
+		mostrar "Versión incorrecta de BusyBox.
+Para solucionarlo, reinstalar BusyBox v1.31.0"
+		exit
+	fi
+
 	mostrar_y_correr_comando "dpkg-deb -X ./$archivo ./"
-	rm -fv "./$archivo"
+	mostrar_y_correr_comando "rm -fv ./$archivo"
 	cd "../../"
 	mostrar_y_correr_comando "ln -sv ../../$archivo ./$archivo"
 	mv "./ram/"* "./"
