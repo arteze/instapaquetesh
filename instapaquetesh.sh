@@ -22,7 +22,7 @@ Para solucionarlo, instalar binutils, binutils-multiarch y bash"
 }
 function tener_extension(){
 	archivo_tener_extension="$1"
-	if [[ "$(grep 2>&1 | grep -i BusyBox)" != "" ]];then
+	if [[ "$(grep 2>&1 | grep BusyBox)" != "" ]];then
 		mostrar "Error" "El grep es de BusyBox:
 Para solucionarlo, instalar grep."
 		exit
