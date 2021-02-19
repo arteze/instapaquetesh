@@ -131,8 +131,6 @@ Error al ejecutar basename: Para solucionarlo, reinstalar coreutils"
 
 	carpeta="$(tener_carpeta $archivo)" # c4
 	if [[ "$carpeta" == "error" ]];then
-		echo "error"
-		mostrar "sa" "sa"
 		exit
 	fi
 
