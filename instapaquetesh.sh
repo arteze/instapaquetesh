@@ -21,40 +21,27 @@ Para solucionarlo, instalar binutils, binutils-multiarch y bash"
 	fi
 }
 function tener_extension(){
-
 	archivo="$1"
-
-	if [[ "$(grep 2>&1 | grep BusyBox)" != "" ]];then
-		mostrar "Error" "El grep es de BusyBox:
-Para solucionarlo, instalar grep."
-		echo "error"
-	else
-		extension_cortada="$(echo $archivo | rev | grep -Po "[^.]+" | head -n -1)"
-		echo "$extension_cortada" | while read fila; do
-			encuentra=$(echo "$fila" | grep -v "[-_]" | tail -n1)
-			if [[ "$encuentra" != "" ]]; then
-				echo $encuentra
-			else
-				break
-			fi
-		done | rev | echo "$(paste -sd "." | rev )" | while read fila; do
-			encuentra=$(echo "$fila" | grep -v "[-_]" | tail -n1)
-			if [[ "$encuentra" != "" ]]; then
-				echo $encuentra
-			else
-				break
-			fi
-		done | echo "$(paste -sd "." | rev )"
-	fi
+	extension_cortada="$(echo $archivo | rev | tr "." "\n" | head -n -1)"
+	echo "$extension_cortada" | while read fila; do
+		encuentra=$(echo "$fila" | grep -v "[-_]" | tail -n1)
+		if [[ "$encuentra" != "" ]]; then
+			echo $encuentra
+		else
+			break
+		fi
+	done | rev | echo "$(paste -sd "." | rev )" | while read fila; do
+		encuentra=$(echo "$fila" | grep -v "[-_]" | tail -n1)
+		if [[ "$encuentra" != "" ]]; then
+			echo $encuentra
+		else
+			break
+		fi
+	done | echo "$(paste -sd "." | rev )"
 }
 function tener_carpeta(){
 	archivo="$1"
 	extension="$(tener_extension $archivo)"
-	if [[ "$extension" == "error" ]];then
-		echo "error"
-		exit
-	fi
-	mostrar "err" "$errornum"
 	echo $archivo | rev | cut -c$(($(echo $extension|wc -m)+1))- | rev
 }
 function crear_desmontador(){
@@ -124,15 +111,8 @@ Error al ejecutar basename: Para solucionarlo, reinstalar coreutils"
 		archivo="$(basename $1 2>&1)"
 	fi
 
-	extension="$(tener_extension $archivo)" # c3
-	if [[ "$extension" == "error" ]];then
-		exit
-	fi
-
-	carpeta="$(tener_carpeta $archivo)" # c4
-	if [[ "$carpeta" == "error" ]];then
-		exit
-	fi
+	extension="$(tener_extension $archivo)"
+	carpeta="$(tener_carpeta $archivo)"
 
 	echo "Ruta: $ruta_original"
 	echo "Archivo: $archivo"
