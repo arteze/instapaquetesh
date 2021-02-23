@@ -21,8 +21,13 @@ Para solucionarlo, instalar binutils, binutils-multiarch y bash"
 	fi
 }
 function tener_extension(){
-	archivo="$1"
-	extension_cortada="$(echo $archivo | rev | tr "." "\n" | head -n -1)"
+	archivo_tener_extension="$1"
+	if [[ "$(grep 2>&1 | grep -i BusyBox)" != "" ]];then
+		mostrar "Error" "El grep es de BusyBox:
+Para solucionarlo, instalar coreutils."
+		exit
+	fi
+	extension_cortada="$(echo $archivo_tener_extension | rev | grep -Po "[^.]+" | head -n -1)"
 	echo "$extension_cortada" | while read fila; do
 		encuentra=$(echo "$fila" | grep -v "[-_]" | tail -n1)
 		if [[ "$encuentra" != "" ]]; then
@@ -40,9 +45,9 @@ function tener_extension(){
 	done | echo "$(paste -sd "." | rev )"
 }
 function tener_carpeta(){
-	archivo="$1"
-	extension="$(tener_extension $archivo)"
-	echo $archivo | rev | cut -c$(($(echo $extension|wc -m)+1))- | rev
+	archivo_tener_carpeta="$1"
+	extension="$(tener_extension $archivo_tener_carpeta)"
+	echo $archivo_tener_carpeta | rev | cut -c$(($(echo $extension|wc -m)+1))- | rev
 }
 function crear_desmontador(){
 	echo "#!/bin/sh
@@ -97,23 +102,19 @@ Para solucionarlo, reinstalar BusyBox"
 		cd ./debs
 	fi
 	ruta_original=$(pwd)
-
-	basename_comando="$(basename 2>&1)" # c1
+	basename_comando="$(basename 2>&1)"
 	if [[ "$(echo $basename_comando | grep dpkg)" != "" ]]; then
 		mostrar "Error" "$basename_comando
 Error al ejecutar basename: Para solucionarlo, reinstalar coreutils"
 		exit
 	fi
-
-	archivo="$(basename $1 2>&1)" # c2
+	archivo="$(basename $1 2>&1)"
 	if [[ "$(echo $archivo | grep invalid)" != "" ]]; then
 		cp -vf "/bin/basename-FULL" "/bin/basename"
 		archivo="$(basename $1 2>&1)"
 	fi
-
 	extension="$(tener_extension $archivo)"
 	carpeta="$(tener_carpeta $archivo)"
-
 	echo "Ruta: $ruta_original"
 	echo "Archivo: $archivo"
 	echo "Carpeta: $carpeta"
@@ -158,10 +159,10 @@ Para solucionarlo, reinstalar BusyBox v1.31.0"
 	echo "Compienzo copia"
 	mkdir -pv "./lib64"
 	mkdir -pv "./usr/lib64"
-	mv -vf "./lib/x86_64-linux-gnu/"* "./lib64"
-	mv -vf "./usr/lib/x86_64-linux-gnu/"* "./usr/lib64"
-	rm -rfv "./lib/x86_64-linux-gnu"
-	rm -rfv "./usr/lib/x86_64-linux-gnu"
+	cp -rfv "./lib/x86_64-linux-gnu/"* "./lib64"
+	cp -rfv "./usr/lib/x86_64-linux-gnu/"* "./usr/lib64"
+	borrar_carpeta "./lib/x86_64-linux-gnu"
+	borrar_carpeta "./usr/lib/x86_64-linux-gnu"
 	borrar_carpeta "./lib"
 	borrar_carpeta "./lib64"
 	borrar_carpeta "./usr"
