@@ -21,13 +21,8 @@ Para solucionarlo, instalar binutils, binutils-multiarch y bash"
 	fi
 }
 function tener_extension(){
-	archivo_tener_extension="$1"
-	if [[ "$(grep 2>&1 | grep -i BusyBox)" != "" ]];then
-		mostrar "Error" "El grep es de BusyBox:
-Para solucionarlo, instalar coreutils."
-		exit
-	fi
-	extension_cortada="$(echo $archivo_tener_extension | rev | grep -Po "[^.]+" | head -n -1)"
+	archivo="$1"
+	extension_cortada="$(echo $archivo | rev | tr "." "\n" | head -n -1)"
 	echo "$extension_cortada" | while read fila; do
 		encuentra=$(echo "$fila" | grep -v "[-_]" | tail -n1)
 		if [[ "$encuentra" != "" ]]; then
@@ -45,9 +40,9 @@ Para solucionarlo, instalar coreutils."
 	done | echo "$(paste -sd "." | rev )"
 }
 function tener_carpeta(){
-	archivo_tener_carpeta="$1"
-	extension="$(tener_extension $archivo_tener_carpeta)"
-	echo $archivo_tener_carpeta | rev | cut -c$(($(echo $extension|wc -m)+1))- | rev
+	archivo="$1"
+	extension="$(tener_extension $archivo)"
+	echo $archivo | rev | cut -c$(($(echo $extension|wc -m)+1))- | rev
 }
 function crear_desmontador(){
 	echo "#!/bin/sh
